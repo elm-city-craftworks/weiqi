@@ -1,5 +1,7 @@
 require "net/telnet"
 
+# You can simplify this by using SGFParser gem...
+# 
 # sgf[/AB((\[\w\w\])+)/].scan(/\[(\w\w)\]/).flatten.map { |e| [("a".."z").to_a.index(e.chars.to_a.first), ("a".."z").to_a.index(e.chars.to_a.last)] }
 
 Thread.new { system("gnugo --gtp-listen 9999 --mode gtp") }
