@@ -14,6 +14,7 @@ module Weiqi
     import java.awt.Dimension
 
     import java.awt.event.MouseAdapter
+    import java.awt.event.WindowAdapter
 
     import java.awt.image.BufferedImage
 
@@ -32,12 +33,16 @@ module Weiqi
       move_listener      = MoveListener.new
       move_listener.game = game
 
+      quit_listener      = QuitListener.new
+      quit_listener.game = game
+
       game.observe do |board| 
         panel.board = board 
         panel.repaint
       end
       
       panel.addMouseListener(move_listener)
+      frame.addWindowListener(quit_listener)
     end
 
     class MoveListener < MouseAdapter
@@ -47,6 +52,14 @@ module Weiqi
       def mouseReleased(event)
         game.move(((event.getX - BOARD_OFFSET) / SCALE).round, 
                   ((event.getY - BOARD_OFFSET) / SCALE).round)
+      end
+    end
+
+    class QuitListener < WindowAdapter
+      attr_accessor :game
+
+      def windowClosing(event)
+        game.quit
       end
     end
 

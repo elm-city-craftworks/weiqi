@@ -4,4 +4,9 @@ require_relative "../lib/weiqi"
 
 Weiqi::GnuGo.start_server
 
-Weiqi::UI.run(Weiqi::Game.new(Weiqi::GnuGo.new))
+game = Weiqi::Game.new(Weiqi::GnuGo.new)
+Weiqi::UI.run(game)
+
+trap 'INT' do
+  game.quit
+end

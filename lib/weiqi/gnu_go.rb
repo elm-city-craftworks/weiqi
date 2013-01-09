@@ -27,14 +27,15 @@ module Weiqi
 
     def play_white
       move = command("genmove W")
-      p move[2..-2]
-
 
       update_board(move[2..-2])
     end
 
     def quit
       command("quit")
+      socket.close
+    ensure
+      exit!
     end
 
     private
@@ -79,12 +80,7 @@ module Weiqi
     def command(msg)
       socket.puts(msg)
 
-      buffer = ""
-      until (line = socket.gets) == "\n"
-        buffer << line
-      end
-      
-      buffer
+      socket.take_while { |line| line != "\n" }.join
     end
   end
 end
