@@ -19,10 +19,18 @@ module Weiqi
     end
 
     def play_black(x, y)
-      coords = cartesian_to_gnugo(x, y)
+      # FIXME: THIS IS A HACK
+      if (0...19).include?(x) && (0...19).include?(y)
+        coords = cartesian_to_gnugo(x, y)
 
-      command("play B #{coords}")
-      update_board(coords)
+        command("play B #{coords}")
+
+        update_board(coords)
+      else
+        command("play B PASS")
+
+        update_board("PASS")
+      end
     end
 
     def play_white
