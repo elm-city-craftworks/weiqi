@@ -2,7 +2,12 @@ require_relative "board"
 
 module Weiqi
   class UI
+    WINDOW_SIZE   = 800
+    SCALE         = 30.0
+    BOARD_OFFSET  = 125
+
     include Java
+
     import java.awt.Color
     import java.awt.Graphics
     import java.awt.BasicStroke
@@ -14,68 +19,6 @@ module Weiqi
 
     import javax.swing.JPanel
     import javax.swing.JFrame
-
-    class MoveListener < MouseAdapter
-      attr_accessor :game
-
-      # http://stackoverflow.com/questions/3382330/mouselistener-for-jpanel-missing-mouseclicked-events
-      def mouseReleased(event)
-        game.move(((event.getX - 125) / 30.0).round, ((event.getY - 125) / 30.0).round)
-      end
-    end
-
-    class Panel < JPanel
-      def board
-        @board ||= Board.new([],[])
-      end
-
-      attr_writer :board
-
-      def paintComponent(g)
-        image = BufferedImage.new(800,800, BufferedImage::TYPE_INT_ARGB)
-
-        bg = image.getGraphics
-        
-        bg.setColor(Color.new(222, 184, 135, 255))
-        bg.fillRect(0,0,image.getWidth, image.getHeight)
-
-        18.times.to_a.product(18.times.to_a) do |x,y|
-          bg.setColor(Color.new(255, 250, 240, 255))
-          bg.fillRect(125+x*30,125+y*30,30,30)
-          bg.setColor(Color.black)
-          bg.setStroke(BasicStroke.new(1))
-          bg.drawRect(125+x*30,125+y*30,30,30)
-        end
-
-        bg.setColor(Color.black)
-        bg.fillArc(120+30*3, 120+30*3, 10, 10, 0, 360)
-        bg.fillArc(120+30*3, 120+30*9, 10, 10, 0, 360)
-        bg.fillArc(120+30*3, 120+30*15, 10, 10, 0, 360)
-
-        bg.fillArc(120+30*9, 120+30*3, 10, 10, 0, 360)
-        bg.fillArc(120+30*9, 120+30*9, 10, 10, 0, 360)
-        bg.fillArc(120+30*9, 120+30*15, 10, 10, 0, 360)
-
-        bg.fillArc(120+30*15, 120+30*3, 10, 10, 0, 360)
-        bg.fillArc(120+30*15, 120+30*9, 10, 10, 0, 360)
-        bg.fillArc(120+30*15, 120+30*15, 10, 10, 0, 360)
-
-        board.white_stones.each do |x,y|
-          bg.setColor(Color.white)
-          bg.fillArc(110+30*x, 110+30*y, 30, 30, 0, 360)
-          bg.setColor(Color.black)
-          bg.drawArc(110+30*x, 110+30*y, 30, 30, 0, 360)
-        end
-
-        board.black_stones.each do |x,y|
-          bg.setColor(Color.black)
-          bg.fillArc(110+30*x, 110+30*y, 30, 30, 0, 360)
-        end
-
-        g.drawImage(image, 0, 0, nil)
-        bg.dispose
-      end
-    end
 
     def self.run(game)
       panel = Panel.new
@@ -95,6 +38,75 @@ module Weiqi
       end
       
       panel.addMouseListener(move_listener)
+    end
+
+    class MoveListener < MouseAdapter
+      attr_accessor :game
+
+      # http://stackoverflow.com/questions/3382330/mouselistener-for-jpanel-missing-mouseclicked-events
+      def mouseReleased(event)
+        game.move(((event.getX - BOARD_OFFSET) / SCALE).round, 
+                  ((event.getY - BOARD_OFFSET) / SCALE).round)
+      end
+    end
+
+    class Panel < JPanel
+      def board
+        @board ||= Board.new([],[])
+      end
+
+      attr_writer :board
+
+      def paintComponent(g)
+        image = BufferedImage.new(WINDOW_SIZE, WINDOW_SIZE, BufferedImage::TYPE_INT_ARGB)
+
+        bg = image.getGraphics
+        
+        bg.setColor(Color.new(222, 184, 135, 255))
+        bg.fillRect(0,0,image.getWidth, image.getHeight)
+
+        (board.size - 1).times.to_a.product((board.size - 1).times.to_a) do |x,y|
+          bg.setColor(Color.new(255, 250, 240, 255))
+          bg.fillRect(125+x*30,125+y*30,30,30)
+          bg.setColor(Color.black)
+          bg.setStroke(BasicStroke.new(1))
+          bg.drawRect(BOARD_OFFSET + x*SCALE,
+                      BOARD_OFFSET + y*SCALE,
+                      SCALE, SCALE)
+        end
+
+        
+        bg.setColor(Color.black)
+
+        # this draws star points
+        [3,9,15].product([3,9,15]) do |dx, dy|
+          bg.fillArc((BOARD_OFFSET - 5) + SCALE*dx, 
+                     (BOARD_OFFSET - 5) + SCALE*dy, 
+                     10, 10, 0, 360)
+        end
+
+
+        board.white_stones.each do |x,y|
+          bg.setColor(Color.white)
+          bg.fillArc((BOARD_OFFSET - 15) + SCALE*x, 
+                     (BOARD_OFFSET - 15) + SCALE*y, 
+                     30, 30, 0, 360)
+
+          bg.setColor(Color.black)
+          bg.drawArc((BOARD_OFFSET - 15) + SCALE*x, 
+                     (BOARD_OFFSET - 15) + SCALE*y, 
+                     30, 30, 0, 360)
+        end
+
+        board.black_stones.each do |x,y|
+          bg.fillArc((BOARD_OFFSET - 15) + SCALE*x, 
+                     (BOARD_OFFSET - 15) + SCALE*y, 
+                     30, 30, 0, 360)
+        end
+
+        g.drawImage(image, 0, 0, nil)
+        bg.dispose
+      end
     end
   end
 end
