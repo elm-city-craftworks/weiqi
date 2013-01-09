@@ -52,7 +52,7 @@ module Weiqi
 
     class Panel < JPanel
       def board
-        @board ||= Board.new([],[])
+        @board ||= Board.empty
       end
 
       attr_writer :board
@@ -65,11 +65,12 @@ module Weiqi
         bg.setColor(Color.new(222, 184, 135, 255))
         bg.fillRect(0,0,image.getWidth, image.getHeight)
 
+        bg.setStroke(BasicStroke.new(1))
+
         (board.size - 1).times.to_a.product((board.size - 1).times.to_a) do |x,y|
           bg.setColor(Color.new(255, 250, 240, 255))
           bg.fillRect(125+x*30,125+y*30,30,30)
           bg.setColor(Color.black)
-          bg.setStroke(BasicStroke.new(1))
           bg.drawRect(BOARD_OFFSET + x*SCALE,
                       BOARD_OFFSET + y*SCALE,
                       SCALE, SCALE)
@@ -96,12 +97,32 @@ module Weiqi
           bg.drawArc((BOARD_OFFSET - 15) + SCALE*x, 
                      (BOARD_OFFSET - 15) + SCALE*y, 
                      30, 30, 0, 360)
+
+          if board.last_move == [x,y]
+            bg.setStroke(BasicStroke.new(2))
+            bg.drawArc((BOARD_OFFSET - 10) + SCALE*x,
+                       (BOARD_OFFSET - 10) + SCALE*y,
+                       20, 20, 0, 360)
+            bg.setStroke(BasicStroke.new(1))
+          end
         end
 
         board.black_stones.each do |x,y|
+          bg.setColor(Color.black)
+
           bg.fillArc((BOARD_OFFSET - 15) + SCALE*x, 
                      (BOARD_OFFSET - 15) + SCALE*y, 
                      30, 30, 0, 360)
+
+          if board.last_move == [x,y]
+            bg.setColor(Color.white)
+            bg.setStroke(BasicStroke.new(2))
+            bg.drawArc((BOARD_OFFSET - 10) + SCALE*x,
+                       (BOARD_OFFSET - 10) + SCALE*y,
+                       20, 20, 0, 360)
+            bg.setStroke(BasicStroke.new(1))
+          end
+
         end
 
         g.drawImage(image, 0, 0, nil)

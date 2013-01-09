@@ -1,14 +1,19 @@
 module Weiqi
   class Board
-    def initialize(black_stones, white_stones)
+    def self.empty
+      Board.new([], [], nil)
+    end
+
+    def initialize(black_stones, white_stones, last_move)
       @black_stones = black_stones
       @white_stones = white_stones
+      @last_move    = last_move
     end
 
     def size
       19
     end
 
-    attr_accessor :black_stones, :white_stones
+    attr_reader :black_stones, :white_stones, :last_move
   end
 end

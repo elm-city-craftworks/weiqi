@@ -19,22 +19,27 @@ module Weiqi
     end
 
     def play_black(x, y)
-      coords = go_coords(x, y)
+      coords = cartesian_to_gnugo(x, y)
 
       command("play B #{coords}")
-      update_board
+      update_board(coords)
     end
 
     def play_white
-      command("genmove W")
-      update_board
+      move = command("genmove W")
+      p move[2..-2]
+
+
+      update_board(move[2..-2])
     end
 
     def quit
       command("quit")
     end
 
-    def update_board
+    private
+
+    def update_board(last_move)
       Dir.mktmpdir do |dir|
         command("printsgf #{dir}/foo.sgf")
 
@@ -43,22 +48,28 @@ module Weiqi
 
         node   = game.current_node
 
-        black_stones = (node[:AB] || []).map { |coord| cartesian_coords(coord) }
-        white_stones = (node[:AW] || []).map { |coord| cartesian_coords(coord) }
+        black_stones = (node[:AB] || []).map { |coord| sgf_to_cartesian(coord) }
+        white_stones = (node[:AW] || []).map { |coord| sgf_to_cartesian(coord) }
+
+
+        move = (last_move == "PASS") ? "PASS" : gnugo_to_cartesian(last_move)
       
-        Board.new(black_stones, white_stones)
+        Board.new(black_stones, white_stones, move)
       end
     end
-    
-    private
 
-    def go_coords(x,y)
+    def cartesian_to_gnugo(x,y)
       "#{(("A".."Z").to_a - ["I"])[x]}#{19 - y}"
     end
 
-    def cartesian_coords(coord)
+    def sgf_to_cartesian(coord)
       alpha = ("a".."z").to_a
       [alpha.index(coord[0]), alpha.index(coord[1])]
+    end
+
+    def gnugo_to_cartesian(coord)
+      alpha = ("A".."Z").to_a - ["I"]
+      [alpha.index(coord[0]), 19 - Integer(coord[1..-1])]
     end
 
     def socket
