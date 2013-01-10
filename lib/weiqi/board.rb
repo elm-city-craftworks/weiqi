@@ -1,6 +1,6 @@
 module Weiqi
   class Board
-    SIZE = 5
+    SIZE = 19
 
     def self.empty
       Board.new([], [], nil)

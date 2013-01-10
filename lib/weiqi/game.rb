@@ -31,14 +31,21 @@ module Weiqi
 
     def move
       notify_observers(yield)
-    
+
+      # FIXME: Not synchronized.
       Thread.new { notify_observers(@engine.play_white) }
     end
 
     def notify_observers(board)
       @history << board.last_move
 
-      @finished = true if @history.last(2) == ["PASS", "PASS"]
+      if @history.last(2) == ["PASS", "PASS"] 
+        puts "Game over. Final score #{@engine.final_score}"
+        quit
+      elsif @history.last == "resign"
+        puts "You win! The computer resigned"
+        quit
+      end
 
       @observers.each { |o| o.(board) }
     end

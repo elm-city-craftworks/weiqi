@@ -11,7 +11,8 @@ module Weiqi
 
     def self.start_server
       Thread.new do
-        system("gnugo --gtp-listen #{PORT} --mode gtp --boardsize #{Board::SIZE}")
+        system("gnugo --gtp-listen #{PORT} --mode gtp " +
+                     "--boardsize #{Board::SIZE} --resign-allowed")
       end
 
       sleep 2
@@ -37,6 +38,10 @@ module Weiqi
       update_board(move[2..-2])
     end
 
+    def final_score
+      command("final_score")
+    end
+
     def quit
       command("quit")
       socket.close
@@ -59,7 +64,7 @@ module Weiqi
         white_stones = (node[:AW] || []).map { |coord| sgf_to_cartesian(coord) }
 
 
-        move = (last_move == "PASS") ? "PASS" : gnugo_to_cartesian(last_move)
+        move = (["PASS","resign"].include?(last_move)) ? last_move : gnugo_to_cartesian(last_move)
       
         Board.new(black_stones, white_stones, move)
       end
@@ -84,10 +89,9 @@ module Weiqi
     end
 
     def command(msg)
-      STDERR.puts(msg)
       socket.puts(msg)
 
-      p socket.take_while { |line| line != "\n" }.join
+      socket.take_while { |line| line != "\n" }.join
     end
   end
 end
