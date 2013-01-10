@@ -37,6 +37,8 @@ module Weiqi
       quit_listener.game = game
 
       game.observe do |board| 
+        game.quit if game.finished?
+         
         panel.board = board 
         panel.repaint
       end
@@ -50,8 +52,14 @@ module Weiqi
 
       # http://stackoverflow.com/questions/3382330/mouselistener-for-jpanel-missing-mouseclicked-events
       def mouseReleased(event)
-        game.move(((event.getX - BOARD_OFFSET) / SCALE).round, 
-                  ((event.getY - BOARD_OFFSET) / SCALE).round)
+        x, y = ((event.getX - BOARD_OFFSET) / SCALE).round, 
+               ((event.getY - BOARD_OFFSET) / SCALE).round
+
+        if (0...Board::SIZE).include?(x) && (0...Board::SIZE).include?(y)
+          game.play(x,y)
+        else
+          game.pass
+        end
       end
     end
 
@@ -80,7 +88,7 @@ module Weiqi
 
         bg.setStroke(BasicStroke.new(1))
 
-        (board.size - 1).times.to_a.product((board.size - 1).times.to_a) do |x,y|
+        (Board::SIZE - 1).times.to_a.product((Board::SIZE - 1).times.to_a) do |x,y|
           bg.setColor(Color.new(255, 250, 240, 255))
           bg.fillRect(125+x*30,125+y*30,30,30)
           bg.setColor(Color.black)
@@ -93,10 +101,12 @@ module Weiqi
         bg.setColor(Color.black)
 
         # this draws star points
-        [3,9,15].product([3,9,15]) do |dx, dy|
-          bg.fillArc((BOARD_OFFSET - 5) + SCALE*dx, 
-                     (BOARD_OFFSET - 5) + SCALE*dy, 
-                     10, 10, 0, 360)
+        if Board::SIZE == 19
+          [3,9,15].product([3,9,15]) do |dx, dy|
+            bg.fillArc((BOARD_OFFSET - 5) + SCALE*dx, 
+                       (BOARD_OFFSET - 5) + SCALE*dy, 
+                       10, 10, 0, 360)
+          end
         end
 
 

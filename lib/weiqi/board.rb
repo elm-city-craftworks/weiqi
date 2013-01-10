@@ -1,5 +1,7 @@
 module Weiqi
   class Board
+    SIZE = 5
+
     def self.empty
       Board.new([], [], nil)
     end
@@ -8,10 +10,6 @@ module Weiqi
       @black_stones = black_stones
       @white_stones = white_stones
       @last_move    = last_move
-    end
-
-    def size
-      19
     end
 
     attr_reader :black_stones, :white_stones, :last_move

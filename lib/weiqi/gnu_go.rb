@@ -4,7 +4,6 @@ require "socket"
 
 require_relative "board"
 
-
 module Weiqi
   class GnuGo
     HOST = "localhost"
@@ -12,25 +11,24 @@ module Weiqi
 
     def self.start_server
       Thread.new do
-        system("gnugo --gtp-listen #{PORT} --mode gtp")
+        system("gnugo --gtp-listen #{PORT} --mode gtp --boardsize #{Board::SIZE}")
       end
 
       sleep 2
     end
 
+    def pass_black
+      command("play B PASS")
+
+      update_board("PASS")
+    end
+
     def play_black(x, y)
-      # FIXME: THIS IS A HACK
-      if (0...19).include?(x) && (0...19).include?(y)
-        coords = cartesian_to_gnugo(x, y)
+      coords = cartesian_to_gnugo(x, y)
 
-        command("play B #{coords}")
+      command("play B #{coords}")
 
-        update_board(coords)
-      else
-        command("play B PASS")
-
-        update_board("PASS")
-      end
+      update_board(coords)
     end
 
     def play_white
@@ -68,7 +66,7 @@ module Weiqi
     end
 
     def cartesian_to_gnugo(x,y)
-      "#{(("A".."Z").to_a - ["I"])[x]}#{19 - y}"
+      "#{(("A".."Z").to_a - ["I"])[x]}#{Board::SIZE - y}"
     end
 
     def sgf_to_cartesian(coord)
@@ -78,7 +76,7 @@ module Weiqi
 
     def gnugo_to_cartesian(coord)
       alpha = ("A".."Z").to_a - ["I"]
-      [alpha.index(coord[0]), 19 - Integer(coord[1..-1])]
+      [alpha.index(coord[0]), Board::SIZE - Integer(coord[1..-1])]
     end
 
     def socket
@@ -86,9 +84,10 @@ module Weiqi
     end
 
     def command(msg)
+      STDERR.puts(msg)
       socket.puts(msg)
 
-      socket.take_while { |line| line != "\n" }.join
+      p socket.take_while { |line| line != "\n" }.join
     end
   end
 end
