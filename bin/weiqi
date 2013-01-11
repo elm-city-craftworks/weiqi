@@ -5,6 +5,13 @@ require_relative "../lib/weiqi"
 Weiqi::GnuGo.start_server
 
 game = Weiqi::Game.new(Weiqi::GnuGo.new)
+
+if RUBY_PLATFORM == "java"
+  require_relative "../lib/weiqi/ui/swing"
+else
+  require_relative "../lib/weiqi/ui/ray"
+end
+
 Weiqi::UI.run(game)
 
 trap 'INT' do

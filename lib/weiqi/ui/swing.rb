@@ -1,4 +1,4 @@
-require_relative "board"
+require_relative "../board"
 
 module Weiqi
   class UI
