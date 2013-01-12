@@ -1,11 +1,7 @@
-require_relative "../board"
+require_relative "common"
 
 module Weiqi
-  class UI
-    WINDOW_SIZE   = 800
-    SCALE         = 30.0
-    BOARD_OFFSET  = 125
-
+  module UI
     include Java
 
     import java.awt.Color
@@ -23,43 +19,37 @@ module Weiqi
 
     def self.run(game)
       panel = Panel.new
-      panel.setPreferredSize(Dimension.new(800, 800))
+      panel.setPreferredSize(Dimension.new(WINDOW_SIZE, WINDOW_SIZE))
+      panel.view = BoardView.new
 
       frame = JFrame.new
       frame.add(panel)
       frame.pack
       frame.show
 
-      move_listener      = MoveListener.new
-      move_listener.game = game
-
-      quit_listener      = QuitListener.new
-      quit_listener.game = game
+      click_listener         = ClickListener.new
+      quit_listener          = QuitListener.new
+      
+      click_listener.game    = game
+      quit_listener.game     = game
+      
+      panel.addMouseListener(click_listener)
+      frame.addWindowListener(quit_listener)
 
       game.observe do |board| 
         game.quit if game.finished?
          
-        panel.board = board 
+        panel.view = BoardView.new(board)
         panel.repaint
       end
-      
-      panel.addMouseListener(move_listener)
-      frame.addWindowListener(quit_listener)
     end
 
-    class MoveListener < MouseAdapter
+    class ClickListener < MouseAdapter
       attr_accessor :game
 
       # http://stackoverflow.com/questions/3382330/mouselistener-for-jpanel-missing-mouseclicked-events
       def mouseReleased(event)
-        x, y = ((event.getX - BOARD_OFFSET) / SCALE).round, 
-               ((event.getY - BOARD_OFFSET) / SCALE).round
-
-        if (0...Board::SIZE).include?(x) && (0...Board::SIZE).include?(y)
-          game.play(x,y)
-        else
-          game.pass
-        end
+        PlayMove.(game, event.getX, event.getY)
       end
     end
 
@@ -71,85 +61,65 @@ module Weiqi
       end
     end
 
-    class Panel < JPanel
-      def board
-        @board ||= Board.empty
+    class GraphicsAdapter
+      def initialize(canvas)
+        self.canvas = canvas
       end
 
-      attr_writer :board
+      def draw_rect(params)
+        if fill_color = params[:fill_color]
+          canvas.setColor(Color.new(*fill_color))
+          canvas.fillRect(*params.fetch(:box))
+        end
+
+        if stroke_color = params[:stroke_color]
+          canvas.setColor(Color.new(*stroke_color))
+          canvas.drawRect(*params.fetch(:box))
+        end
+      end
+
+      def draw_circle(params)
+        x, y   = params.fetch(:center)
+        radius = params.fetch(:radius)
+
+        if fill_color = params[:fill_color]
+          canvas.setColor(Color.new(*fill_color))
+
+          canvas.fillArc(x - radius, y - radius, radius*2, radius*2, 0, 360)
+        end
+
+        if stroke_color = params[:stroke_color]
+          original_stroke = canvas.getStroke
+
+          if stroke_width = params[:stroke_width]
+            canvas.setStroke(BasicStroke.new(stroke_width))
+          end
+
+          canvas.setColor(Color.new(*stroke_color))
+          
+          canvas.drawArc(x - radius, y - radius, radius*2, radius*2, 0, 360)
+
+          canvas.setStroke(original_stroke)
+        end
+
+      end
+
+      private
+
+      attr_accessor :canvas
+    end
+
+    class Panel < JPanel
+      attr_accessor :view
 
       def paintComponent(g)
-        image = BufferedImage.new(WINDOW_SIZE, WINDOW_SIZE, BufferedImage::TYPE_INT_ARGB)
+        image  = BufferedImage.new(WINDOW_SIZE, WINDOW_SIZE, BufferedImage::TYPE_INT_ARGB)
+        canvas = image.getGraphics
 
-        bg = image.getGraphics
-        
-        bg.setColor(Color.new(222, 184, 135, 255))
-        bg.fillRect(0,0,image.getWidth, image.getHeight)
-
-        bg.setStroke(BasicStroke.new(1))
-
-        (Board::SIZE - 1).times.to_a.product((Board::SIZE - 1).times.to_a) do |x,y|
-          bg.setColor(Color.new(255, 250, 240, 255))
-          bg.fillRect(125+x*30,125+y*30,30,30)
-          bg.setColor(Color.black)
-          bg.drawRect(BOARD_OFFSET + x*SCALE,
-                      BOARD_OFFSET + y*SCALE,
-                      SCALE, SCALE)
-        end
-
-        
-        bg.setColor(Color.black)
-
-        # this draws star points
-        if Board::SIZE == 19
-          [3,9,15].product([3,9,15]) do |dx, dy|
-            bg.fillArc((BOARD_OFFSET - 5) + SCALE*dx, 
-                       (BOARD_OFFSET - 5) + SCALE*dy, 
-                       10, 10, 0, 360)
-          end
-        end
-
-
-        board.white_stones.each do |x,y|
-          bg.setColor(Color.white)
-          bg.fillArc((BOARD_OFFSET - 15) + SCALE*x, 
-                     (BOARD_OFFSET - 15) + SCALE*y, 
-                     30, 30, 0, 360)
-
-          bg.setColor(Color.black)
-          bg.drawArc((BOARD_OFFSET - 15) + SCALE*x, 
-                     (BOARD_OFFSET - 15) + SCALE*y, 
-                     30, 30, 0, 360)
-
-          if board.last_move == [x,y]
-            bg.setStroke(BasicStroke.new(2))
-            bg.drawArc((BOARD_OFFSET - 10) + SCALE*x,
-                       (BOARD_OFFSET - 10) + SCALE*y,
-                       20, 20, 0, 360)
-            bg.setStroke(BasicStroke.new(1))
-          end
-        end
-
-        board.black_stones.each do |x,y|
-          bg.setColor(Color.black)
-
-          bg.fillArc((BOARD_OFFSET - 15) + SCALE*x, 
-                     (BOARD_OFFSET - 15) + SCALE*y, 
-                     30, 30, 0, 360)
-
-          if board.last_move == [x,y]
-            bg.setColor(Color.white)
-            bg.setStroke(BasicStroke.new(2))
-            bg.drawArc((BOARD_OFFSET - 10) + SCALE*x,
-                       (BOARD_OFFSET - 10) + SCALE*y,
-                       20, 20, 0, 360)
-            bg.setStroke(BasicStroke.new(1))
-          end
-
-        end
+        view.render(GraphicsAdapter.new(canvas))
 
         g.drawImage(image, 0, 0, nil)
-        bg.dispose
+        canvas.dispose
       end
     end
   end

@@ -5,14 +5,10 @@ rescue LoadError
         "https://github.com/Mon-Ouie/ray")
 end
 
-require_relative "../board"
+require_relative "common"
 
 module Weiqi
-  class UI
-    WINDOW_SIZE   = 800
-    SCALE         = 30.0
-    BOARD_OFFSET  = 125
-
+  module UI
     def self.run(game)
       game_runner = GameRunner.new
       scene       = game_runner.registered_scene(:main)
@@ -29,6 +25,48 @@ module Weiqi
       game_runner.run
     end
 
+    class GraphicsAdapter
+      def initialize(canvas)
+        self.canvas = canvas 
+      end
+
+      def draw_rect(params)
+        rect = Ray::Polygon.rectangle(params.fetch(:box), Ray::Color.new(*params.fetch(:fill_color)))
+
+        if params[:stroke_color]
+          rect.outlined = true
+          rect.outline  = Ray::Color.new(*params[:stroke_color])
+        end
+
+        canvas.draw(rect)
+      end
+
+      def draw_circle(params)
+        center = params.fetch(:center)
+        radius = params.fetch(:radius)
+          
+        radius -= params.fetch(:stroke_width,1)*2 if params[:stroke_color]
+
+        circle = Ray::Polygon.circle(center, radius)
+
+        if params[:fill_color]
+          circle.color = Ray::Color.new(*params[:fill_color])
+        end
+
+        if params[:stroke_color]
+          circle.outlined = true
+          circle.outline  = Ray::Color.new(*params[:stroke_color])
+          circle.outline_width = params[:stroke_width] if params[:stroke_width]
+        end
+
+        canvas.draw(circle)
+      end
+
+      private
+
+      attr_accessor :canvas
+    end
+
     class MainScene < Ray::Scene
       scene_name :main
 
@@ -38,16 +76,7 @@ module Weiqi
         self.frames_per_second = 30
         update_board
 
-        on(:mouse_release) do |button, pos|
-          x,y = ((pos.x - BOARD_OFFSET) / SCALE).round,
-                ((pos.y - BOARD_OFFSET) / SCALE).round
-
-          if (0...Board::SIZE).include?(x) && (0...Board::SIZE).include?(y)
-            game.play(x,y)
-          else
-            game.pass
-          end
-        end
+        on(:mouse_release) { |_, pos| PlayMove.(game, pos.x, pos.y) }
       end
 
       def render(win)
@@ -56,71 +85,10 @@ module Weiqi
 
       def update_board
         image = Ray::Image.new [WINDOW_SIZE, WINDOW_SIZE]        
+        view  = BoardView.new(board)
 
         image_target image do |target|
-          target.clear(Ray::Color.new(222, 185, 135, 255))
-
-          (Board::SIZE - 1).times.to_a.product((Board::SIZE - 1).times.to_a) do |x,y|
-            rect = Ray::Polygon.rectangle([0,0,SCALE,SCALE], Ray::Color.new(255, 250, 240, 255))
-            rect.outlined = true
-            rect.outline = Ray::Color.black
-
-            # maybe move into constructor?
-            rect.pos += [BOARD_OFFSET + x*SCALE, BOARD_OFFSET+y*SCALE]
-            target.draw(rect)
-
-            if Board::SIZE == 19
-              [3,9,15].product([3,9,15]) do |dx, dy|
-                circle = Ray::Polygon.circle([(BOARD_OFFSET + SCALE*dx),
-                                              (BOARD_OFFSET + SCALE*dy)],
-                                              5, Ray::Color.black)
-
-                target.draw(circle)
-              end
-            end
-          end
-
-          board.white_stones.each do |x,y|
-            stone = Ray::Polygon.circle([(BOARD_OFFSET + SCALE*x),
-                                        (BOARD_OFFSET + SCALE*y)],
-                                        14, Ray::Color.white)
-
-            stone.outlined      = true
-            stone.outline       = Ray::Color.black
-
-            target.draw(stone)
-           
-            if board.last_move == [x,y]
-              marker = Ray::Polygon.circle([(BOARD_OFFSET + SCALE*x),
-                                            (BOARD_OFFSET + SCALE*y)], 
-                                            8, Ray::Color.white)
-              marker.outlined      = true
-              marker.outline_width = 2
-              marker.outline       = Ray::Color.black
-
-              target.draw(marker)
-            end
-          end
-
-          board.black_stones.each do |x,y|
-            stone = Ray::Polygon.circle([(BOARD_OFFSET + SCALE*x),
-                                        (BOARD_OFFSET + SCALE*y)],
-                                        15, Ray::Color.black)
-
-            target.draw(stone)
-
-            if board.last_move == [x,y]
-              marker = Ray::Polygon.circle([(BOARD_OFFSET + SCALE*x),
-                                            (BOARD_OFFSET + SCALE*y)], 
-                                            8, Ray::Color.black)
-              
-              marker.outlined      = true
-              marker.outline_width = 2
-              marker.outline       = Ray::Color.white
-
-              target.draw(marker)
-            end
-          end
+          view.render(GraphicsAdapter.new(target))
 
           target.update
         end

@@ -7,7 +7,7 @@ require_relative "board"
 module Weiqi
   class GnuGo
     HOST = "localhost"
-    PORT = 9001
+    PORT = 9002
 
     def self.start_server
       Thread.new do
