@@ -5,6 +5,11 @@ for competing against a GNU Go based AI player. Here's what it looks like:
 
 ![Screenshot of Weiqi](http://i.imgur.com/kWrSg.png)
 
+If you're here to complete the Practicing Ruby code reading exercise, or if
+you're just curious about how this application is implemented, be sure to check
+out the **TOUR.md** file. It provides an overview of what is good, bad, and ugly
+about Weiqi's codebase.
+
 ## Installation instructions
 
 This project was developed on Mac OS X, but should work on 
