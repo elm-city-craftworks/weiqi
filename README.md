@@ -1,3 +1,8 @@
+Weiqi is a network-based GTP client for GNU Go. It exists primarily as a
+example codebase for the [Practicing Ruby](http://practicingruby.com)
+journal, but it is functional enough to serve as a minimal interface
+for competing against a GNU Go based AI player.
+
 ![Screenshot of Weiqi](http://i.imgur.com/kWrSg.png)
 
 ## Installation instructions
