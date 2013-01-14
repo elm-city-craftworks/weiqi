@@ -81,7 +81,7 @@ $ ruby bin/weiqi
 ```
 
 This should display a Go board that looks something like the following
-screenshot:
+screenshot (but empty to start with, of course!):
 
 ![Screenshot of Weiqi](http://i.imgur.com/kWrSg.png)
 
