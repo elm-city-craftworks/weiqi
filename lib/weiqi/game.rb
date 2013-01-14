@@ -5,6 +5,7 @@ module Weiqi
       @observers = []
       @history   = []
       @finished  = false
+      @listening = true
     end
 
     def finished?
@@ -30,10 +31,16 @@ module Weiqi
     private
 
     def move
-      notify_observers(yield)
+      return unless @listening
 
-      # FIXME: Not synchronized.
-      Thread.new { notify_observers(@engine.play_white) }
+      notify_observers(yield)
+      @listening = false
+
+      # FIXME: poor synchronization
+      Thread.new do 
+        notify_observers(@engine.play_white) 
+        @listening = true
+      end
     end
 
     def notify_observers(board)
