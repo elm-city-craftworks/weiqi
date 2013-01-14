@@ -36,12 +36,7 @@ module Weiqi
       panel.addMouseListener(click_listener)
       frame.addWindowListener(quit_listener)
 
-      game.observe do |board| 
-        game.quit if game.finished?
-         
-        panel.view = BoardView.new(board)
-        panel.repaint
-      end
+      ListenForChanges.(panel, game)
     end
 
     class ClickListener < MouseAdapter

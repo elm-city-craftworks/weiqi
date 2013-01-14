@@ -6,6 +6,15 @@ module Weiqi
     SCALE         = 30.0
     BOARD_OFFSET  = 125
 
+    ListenForChanges = ->(display, game) {
+      game.observe do |board|
+        game.quit if game.finished?
+
+        display.view = BoardView.new(board)
+        display.repaint
+      end
+    }
+
     PlayMove = ->(game, mouse_x, mouse_y) {
       x, y = ((mouse_x - BOARD_OFFSET) / SCALE).round, 
              ((mouse_y - BOARD_OFFSET) / SCALE).round
@@ -29,7 +38,6 @@ module Weiqi
         paint_white_stones(canvas)
         paint_black_stones(canvas)
       end
-
 
       attr_accessor :board
 

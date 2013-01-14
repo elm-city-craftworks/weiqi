@@ -53,8 +53,24 @@ to be manually installed on all platforms except for Windows. See
 
 ### Event-based view updates
 
-* Observer-based interaction between models and UI
-* Game as a controller object
+As we discussed earlier, Weiqi relies on the GNU Go engine to control the state 
+of the game board. Each time a command is executed on the engine, the board
+state is serialized using the SGF format, and then the Weiqi GUI parses
+that file and updates its display.
+
+Rather than having the UI poll for changes on regular intervals, a simple
+callback based system is used instead. For example, if you take a closer
+look at the Ray graphics adapter, you'll see code that looks like this:
+
+```ruby
+  game.observe do |board|
+    game.quit if game.finished?
+
+    scene.board = board
+    scene.update_board
+  end
+ ```
+
 
 
 ## Known issues and caveats

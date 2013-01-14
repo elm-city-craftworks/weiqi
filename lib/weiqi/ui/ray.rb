@@ -13,14 +13,9 @@ module Weiqi
       game_runner = GameRunner.new
       scene       = game_runner.registered_scene(:main)
       scene.game  = game
-      scene.board = Board.empty
+      scene.view = BoardView.new
 
-      game.observe do |board|
-        game.quit if game.finished?
-
-        scene.board = board
-        scene.update_board
-      end
+      ListenForChanges.(scene, game)
 
       game_runner.run
     end
@@ -70,11 +65,11 @@ module Weiqi
     class MainScene < Ray::Scene
       scene_name :main
 
-      attr_accessor :game, :board, :image
+      attr_accessor :game, :view, :image
 
       def register
         self.frames_per_second = 30
-        update_board
+        repaint
 
         on(:mouse_release) { |_, pos| PlayMove.(game, pos.x, pos.y) }
       end
@@ -83,9 +78,8 @@ module Weiqi
         win.draw @board_sprite
       end
 
-      def update_board
+      def repaint
         image = Ray::Image.new [WINDOW_SIZE, WINDOW_SIZE]        
-        view  = BoardView.new(board)
 
         image_target image do |target|
           view.render(GraphicsAdapter.new(target))
