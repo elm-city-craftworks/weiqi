@@ -38,8 +38,8 @@ with what you needed to do to get things working on your platform)
 
 ### Ray (on platforms other than JRuby)
 
-If you are using JRuby, you do not need to install any special libraries to run
-the Weiqi UI, as it ships with a Swing-based version that will work on JRuby out
+If you are using JRuby, you do not need to install any special graphics libraries 
+to run Weiqi, as it ships with a Swing-based version that will work on JRuby out
 of the box. But if you're using standard Ruby (or maybe even Rubinius
 -- untested), you'll need to install Ray. It is listed in the project's Gemfile,
 so running `bundle` will attempt to install it, but it has a few dependencies
@@ -61,9 +61,9 @@ and OpenGL. Check your package manager, and good luck!
 (If you're running on a popular distro like Ubuntu or Debian, I'd appreciate it
 if you contribute a pull request with specific install instructions!)
 
-### Everything else
+### Additional Dependencies
 
-Assuming you have bundler handy, you can install the required gems as follows:
+Assuming you have bundler handy, you can install all required gems as follows:
 
 ```
 $ bundle
@@ -80,4 +80,16 @@ Simply run the following command from the project root:
 $ ruby bin/weiqi
 ```
 
-(TODO: ADD SCREENSHOT)
+This should display a Go board that looks something like the following
+screenshot:
+
+![Screenshot of Weiqi](http://i.imgur.com/kWrSg.png)
+
+
+You can click on any intersection to place your stones. Click anywhere in the
+area outside of the board to PASS, and close the window to resign. Upon
+completing a full game, the score will be posted to terminal.
+
+If things don't work as expected, please check the installation instructions
+again to make sure you didn't miss anything. If that doesn't work, go ahead
+and file a ticket!

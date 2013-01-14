@@ -51,9 +51,11 @@ building 2D games with, but it has several dependencies that need
 to be manually installed on all platforms except for Windows. See 
 **lib/weiqi/ui/ray.rb** for more details.
 
+### Event-based view updates
+
 * Observer-based interaction between models and UI
-* Socket programming in GNU Go module
 * Game as a controller object
+
 
 ## Known issues and caveats
 
