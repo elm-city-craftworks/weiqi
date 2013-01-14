@@ -8,7 +8,7 @@ is pretty minimal:
 
 If you're here to complete the Practicing Ruby code reading exercise, or if
 you're just curious about how this application is implemented, be sure to check
-out the **TOUR.md** file. It provides an overview of what is good, bad, and ugly
+out the **DESIGN.md** file. It provides an overview of what is good, bad, and ugly
 about Weiqi's codebase. But if you want to actually run Weiqi on your own
 machine, installation and usage instructions follow below.
 
@@ -88,7 +88,7 @@ sure to stroke your beard (or your friend's beard) while you do so!
 
 ## Running Weiqi
 
-Simply run the following command from the project root:
+Run the following command from the project root:
 
 ```
 $ ruby bin/weiqi

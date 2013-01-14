@@ -220,6 +220,13 @@ problematic, so I think we need to improve our debugging capabilities first.
 
 ### Lack of proper error handling and debugging capabilities
 
+When something goes wrong, Weiqi is very tight lipped and doesn't give
+you much useful information to work with. Some exceptions are probably
+getting caught up in threads, or in the graphics system, and others
+are due to a lack of error handling on the responses from GNU Go.
+
+
+
 ### Lack of automated tests / comprehensive documentation
 
 ## Final notes
