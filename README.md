@@ -105,7 +105,7 @@ and file a ticket!
 ## License / Contribution Policy
 
 This project is licensed under the 
-[GNU General Public License, Version 3](http://www.gnu.org/licenses/gpl.html).
+[GNU General Public License, Version 3](http://www.gnu.org/licenses/gpl-3.0.txt).
 
 Contributors retain full copyright to their contributions, but must agree to
 license their work under the same license of the project itself.
