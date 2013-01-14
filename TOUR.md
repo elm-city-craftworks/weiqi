@@ -1,13 +1,30 @@
 ## Points of interest
 
+### Weiqi uses the Go Text Protocol (gtp)
+
+While the current implementation of Weiqi assumes that you are 
+using GNU Go, multi-engine support might be straightfoward
+to implement. Internally, Weiqi uses a TCP socket to interact
+with a listening GNU Go process via [GTP commands][gtp]. This
+loosely coupled structure might also make it feasible
+to build a mock server for testing/debugging, along with 
+other interesting engine hacks.
+
+It's worth noting that it would have also been possible to
+use pipes rather than sockets, but that lead to some 
+complications on JRuby that weren't easily solveable. Using
+sockets comes with its own set of issues, which we'll discuss
+in more detail later on in this document.
+
+
 ### Weiqi supports multiple graphics backends
 
 Because the GUI for this application is very minimal (just simple
-  geometric shapes and basic event handling), it was straightforward
-  to implement support for multiple graphics backends. The code in 
-  **lib/weiqi/ui/common.rb** implements the GUI in abstract terms,
-  and then low-level adapters fill in the details for each graphics
-  backend.
+geometric shapes and basic event handling), it was straightforward
+to implement support for multiple graphics backends. The code in 
+**lib/weiqi/ui/common.rb** implements the GUI in abstract terms,
+and then low-level adapters fill in the details for each graphics
+backend.
 
 On JRuby, Weiqi uses a AWT/Swing based backend, avoiding 
 the need to install third-party graphics libraries. The code
@@ -38,3 +55,6 @@ to be manually installed on all platforms except for Windows. See
 
 * Gemify?
 * TBD
+
+
+[gtp]: http://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html#SECTION00070000000000000000
