@@ -209,7 +209,7 @@ occasionally fail to respond until some operating-system level cleanup
 happens.
 
 When this occurs, attempting to restart Weiqi after a crash may fail
-until that cleanup happens. You'll see an error like what is shown below:
+until that cleanup happens. You'll see an error like this:
 
 ```Failed to listen on port 9002```
 
