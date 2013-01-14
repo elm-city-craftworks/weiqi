@@ -1,5 +1,8 @@
 ## Points of interest
 
+
+### Support for multiple graphics backends
+
 - Because the GUI for this application is very minimal (just simple
   geometric shapes and basic event handling), it was straightforward
   to implement support for multiple graphics backends. The code in 
