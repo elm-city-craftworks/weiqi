@@ -25,7 +25,7 @@ module Weiqi
     end
 
     def play_black(x, y)
-      coords = cartesian_to_gnugo(x, y)
+      coords = xy_to_gnugo(x, y)
 
       command("play B #{coords}")
 
@@ -60,26 +60,26 @@ module Weiqi
 
         node   = game.current_node
 
-        black_stones = (node[:AB] || []).map { |coord| sgf_to_cartesian(coord) }
-        white_stones = (node[:AW] || []).map { |coord| sgf_to_cartesian(coord) }
+        black_stones = (node[:AB] || []).map { |coord| sgf_to_xy(coord) }
+        white_stones = (node[:AW] || []).map { |coord| sgf_to_xy(coord) }
 
 
-        move = (["PASS","resign"].include?(last_move)) ? last_move : gnugo_to_cartesian(last_move)
+        move = (["PASS","resign"].include?(last_move)) ? last_move : gnugo_to_xy(last_move)
       
         Board.new(black_stones, white_stones, move)
       end
     end
 
-    def cartesian_to_gnugo(x,y)
+    def xy_to_gnugo(x,y)
       "#{(("A".."Z").to_a - ["I"])[x]}#{Board::SIZE - y}"
     end
 
-    def sgf_to_cartesian(coord)
+    def sgf_to_xy(coord)
       alpha = ("a".."z").to_a
       [alpha.index(coord[0]), alpha.index(coord[1])]
     end
 
-    def gnugo_to_cartesian(coord)
+    def gnugo_to_xy(coord)
       alpha = ("A".."Z").to_a - ["I"]
       [alpha.index(coord[0]), Board::SIZE - Integer(coord[1..-1])]
     end
