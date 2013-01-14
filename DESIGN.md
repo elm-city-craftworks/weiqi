@@ -196,7 +196,7 @@ be to at least trigger an event that notifies the UI of failed requests in
 some way. We could also queue up moves, but in practice that wouldn't make
 much sense for a Go game.
 
-### Broken socket connections during unexpected failures
+### Weiqi does not always cleanly close its socket connections
 
 Weiqi has to deal with threading, interprocess communication, fairly complex
 graphics frameworks, and other things that go bump in the night. Because
@@ -218,20 +218,73 @@ with proper error handling, I can make sure to do a safe cleanup. However,
 a lack of visibility into the underlying sources of crashes has been
 problematic, so I think we need to improve our debugging capabilities first.
 
-### Lack of proper error handling and debugging capabilities
+### Weiqi lacks proper error handling and debugging support
 
 When something goes wrong, Weiqi is very tight lipped and doesn't give
 you much useful information to work with. Some exceptions are probably
 getting caught up in threads, or in the graphics system, and others
 are due to a lack of error handling on the responses from GNU Go.
 
+The first step to fixing this problem is to add decent logging support
+to the application, which would either be on by default or could be enabled
+via a debug flag. This would give greater insight into what was going on
+when the application crashed, which might make it easier to reproduce 
+and isolate issues.
 
+From there, we'd need to layer in better exception handling and when possible to
+do so, rescue known error conditions and post friendly messages indicating the
+failures when they cannot be recovered from. Any crash that might lead to a
+failed socket connection upon restart would ideally be wrapped in some cleanup
+code that prevents that problem from happening.
 
-### Lack of automated tests / comprehensive documentation
+All in all, there's really no reason why Weiqi should crash under normal
+use, so we may be able to eliminate most or all of these issues by handling
+failure conditions better.
 
-## Final notes
+### Lack of automated tests 
 
+Weiqi is contributor friendly in the sense that its code is flexible and not
+`very complex, but it is contributor-hostile in that it does not have any 
+automated tests whatsoever. So far, the only way it has been tested is via
+manual experimentation, and that can be pretty tedious.
+
+Writing unit tests for Weiqi wouldn't be especially hard, at least for some of
+its modules. However, those tests would be of questionable value, because the
+vast majority of Weiqi's code is glue code that integrates different software
+components together: there is very little unit-level behavior of its own to
+test.
+
+Acceptance tests that automate the process of playing through a game (and
+perhaps smaller scale tests that play a sequence of a few moves) would be very
+helpful to have. Ideally, these tests would exercise the full stack by
+automating interactions via the UI. Such tests would only require minor changes
+to the way Weiqi is currently implemented, but would involve a non-trivial
+amount of low-level code for the test harness. I've done this sort of thing
+with Ray before, but would need to look into AWT/Swing automation (perhaps
+trying out WindowLicker).
+
+For the time being, I've been speeding up manual testing by tweaking the board
+size in **lib/weiqi/board.rb** to be really small, typically working with a 5x5
+board. Parameterizing this setting might be a worthwhile change, but it is
+very much a hack, and so I'm hesitant to expose that feature without
+implementing it properly.
+
+Weiqi is at the point now where it has so few features that manual testing is
+feasible, but for consistency and future maintainability, some level of
+automated testing is essential moving forward.
+
+## Contributions welcome!
+
+Hopefully these notes have given you a sense of what Weiqi is capable of, and
+what its limitations are. I may or may not have time to work on developing
+this project further myself, but I will absolutely accept pull requests with
+improvements that address the issues in this document, as well as updates
+to these design notes.
+
+If you have any questions, feel free to file a ticket in Weiqi's issue tracker,
+or email me at: **gregory@practicingruby.com**.
 
 [gtp]: http://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html
 [gnugo]: http://www.gnu.org/software/gnugo/
 [sgf]: http://www.red-bean.com/sgf/
+[windowlicker]: http://code.google.com/p/windowlicker/
