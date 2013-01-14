@@ -89,10 +89,21 @@ its move. Because we can never guess precisely how long these
 actions will take, a callback based system is much more efficent
 than relying on polling here.
 
-If you're curious about the specific details, you can take a closer 
-look at the **lib/weiqi/game.rb** to see exactly how and when these 
-observers get notified. Just be warned that there are a few weak
-spots in that code! (They're discussed in its comments, and below).
+Another interesting consequence of this style of design is that the
+UI is purely a delivery mechanism with almost no application-specific
+knowledge. This made it possible to introduce the Ray-based
+adapter with minimal effort even after the entire application had
+been written for JRuby originally. It's hard to say whether this
+basic architecture will start to show signs of brittleness when
+additional features are added to this application, but it seems
+to be working well so far.
+
+If you're curious about the specific details of how this event-based
+system is implemented, you can take a closer look at **lib/weiqi/game.rb** 
+to see exactly how and when these observers get notified. Just be aware 
+that although the basic design idea is sound, there are a few weak 
+spots how this code is implemented! (They're discussed in its 
+comments, and below).
 
 ## Known issues and caveats
 
