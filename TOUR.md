@@ -59,19 +59,40 @@ state is serialized using the SGF format, and then the Weiqi GUI parses
 that file and updates its display.
 
 Rather than having the UI poll for changes on regular intervals, a simple
-callback based system is used instead. For example, if you take a closer
-look at the Ray graphics adapter, you'll see code that looks like this:
+callback based system is used instead. In the common UI code, you'll see
+a function that looks like this:
 
 ```ruby
-  game.observe do |board|
-    game.quit if game.finished?
+module Weiqi
+  module UI
+    ListenForChanges = ->(display, game) {
+      game.observe do |board|
+        game.quit if game.finished?
 
-    scene.board = board
-    scene.update_board
+        display.view = BoardView.new(board)
+        display.repaint
+      end
+    }
   end
- ```
+end
+```
 
+This function is called by the application runner for
+each graphics adapter to allow its display to be updated
+whenever the game state changes.
 
+The basic idea is that each time a player clicks an empty 
+intersection on the board, the callback gets triggered twice:
+once for the board state after the player's move has been
+accepted, and once again once the computer player has decided
+its move. Because we can never guess precisely how long these
+actions will take, a callback based system is much more efficent
+than relying on polling here.
+
+If you're curious about the specific details, you can take a closer 
+look at the **lib/weiqi/game.rb** to see exactly how and when these 
+observers get notified. Just be warned that there are a few weak
+spots in that code! (They're discussed in its comments, and below).
 
 ## Known issues and caveats
 
