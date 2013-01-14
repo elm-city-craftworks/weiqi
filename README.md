@@ -1,3 +1,5 @@
+![Screenshot of Weiqi](http://i.imgur.com/kWrSg.png)
+
 ## Installation instructions
 
 This project was developed on Mac OS X, but should work on 
@@ -80,15 +82,9 @@ Simply run the following command from the project root:
 $ ruby bin/weiqi
 ```
 
-This should display a Go board that looks something like the following
-screenshot (but empty to start with, of course!):
-
-![Screenshot of Weiqi](http://i.imgur.com/kWrSg.png)
-
-
-You can click on any intersection to place your stones. Click anywhere in the
-area outside of the board to PASS, and close the window to resign. Upon
-completing a full game, the score will be posted to terminal.
+This should display a Go board. You can click on any intersection to place your stones. 
+Click anywhere in the area outside of the board to PASS, and close the window to resign. 
+Upon completing a full game, the score will be posted to terminal.
 
 If things don't work as expected, please check the installation instructions
 again to make sure you didn't miss anything. If that doesn't work, go ahead
