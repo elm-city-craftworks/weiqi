@@ -2,19 +2,13 @@
 
 ### Weiqi relies on the Go Text Protocol (GTP)
 
-While the current implementation of Weiqi assumes that you are 
-using [GNU Go][gnugo], multi-engine support might be straightfoward
-to implement. Internally, Weiqi uses a TCP socket to interact
-with a listening GNU Go process via [GTP commands][gtp]. This
-loosely coupled structure might also make it feasible
-to build a mock server for testing/debugging, along with 
-other interesting engine hacks.
-
-It's worth noting that it would have also been possible to
-use pipes rather than sockets, but that lead to some 
-complications on JRuby that weren't easily solveable. Using
-sockets comes with its own set of issues, which we'll discuss
-in more detail later on in this document.
+Internally, Weiqi uses a TCP socket to interact
+with a listening game engine via [GTP commands][gtp]. While the current
+implementation of Weiqi assumes that you are using [GNU Go][gnugo], 
+multi-engine support might be straightfoward to implement. This
+loosely coupled structure might also make it feasible to build a 
+mock server for testing/debugging, along with other interesting 
+engine hacks.
 
 Weiqi's internal representation of the game board does not
 implement any domain logic, instead, it relies on the engine
