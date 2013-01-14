@@ -1,4 +1,4 @@
-## Points of interest
+## Noteworthy implementation details
 
 ### Weiqi relies on the Go Text Protocol (GTP)
 
