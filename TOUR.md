@@ -112,12 +112,118 @@ comments, and below).
 
 ## Known issues and caveats
 
-* Synchronization issues
-* Poor socket behavior during failures
+Weiqi works well enough that you may be able to play a complete Go game without
+experiencing any issues, but not well enough to guard against even relatively
+simple error conditions. In other words, it works great as demo-ware, but to be
+"production ready" it needs to be significantly more robust. Most (if not all)
+of the issues with the code are due to things that were simply left undone due
+to a lack of free time or a lack of experience, so I think they can definitely
+be ironed out with a little effort.
+
+While you can check the issue tracker for a comprehensive list of known bugs,
+I've attempted to summarize them here so you know what to expect while working
+with the codebase, and so that perhaps it might encourage you to share some
+thoughts (or code) to help me fix these issues.
+
+### Weiqi has a painful installation process
+
+Look no farther than **README.md** to see that the installation process for this
+gem badly leaves something to be desired for. It may be possible with some
+effort to package up a standalone JRuby application that simply vendors all
+of its dependencies, but I haven't really looked into it yet.
+
+It should also be possible to package this library up as a gem, and perhaps
+include a setup script that attempts to install dependencies. However, I
+have done very little testing on other operating systems and ruby versions 
+except for what is on my laptop, so I think this is some ways off.
+
+I guess this is still the reason why we don't see a huge amount of desktop
+Ruby applications, but suggestions are welcome!
+
+
+### Weiqi has several missing UI features
+
+Right now, there is no way to select your board size, preferred difficulty
+level for the AI, handicap level, etc. All of these things would be important
+for a comfortable Go playing program that was actually suitable for day-to-day
+use, but I left them out. This was in part due to a desire to keep the
+codebase small enough to be read in a single sitting, but also was a result of
+me not having enough time to work on those features.
+
+Perhaps more importantly, Weiqi does not actually display the final score within
+the UI when the game is completed. Instead, the window abruptly closes, and the
+score is printed out on the command line. Similarly, the only indication of PASS
+moves is a line of text printed to the terminal, and so it is easy to miss those
+and thing that the UI has simply become unresponsive. There are no technical
+barriers to either of these issues, but it may mean that the protocol for
+interacting with the UI will need to be expanded a bit to accomodate some
+additional information.
+
+### Weiqi takes a very naive approach to synchronization
+
+When the player clicks on the board, `Game#move` gets called under
+the hood. This method kicks off a Thread to process
+the human and AI player's move in the background, notifying observers
+twice during the process.
+
+Synchronization is achieved using an awkward flag-based mechanism that
+is almost certainly a sign of my lack of experience with proper threading
+practices:
+
+```ruby
+module Weiqi
+  class Game
+    def move
+      return unless @listening
+      @listening = false
+
+      Thread.new do 
+        notify_observers(yield)
+
+        notify_observers(@engine.play_white) 
+        @listening = true
+      end
+    end
+  end
+end
+```
+
+Although this code seems to work, it may have subtle errors that I haven't been
+able to detect yet, and so I have very little confidence in it. It also has a
+fairly abrupt behavior: any move attempts that are made while other moves
+are currently being processed are simply dropped. A better solution would
+be to at least trigger an event that notifies the UI of failed requests in
+some way. We could also queue up moves, but in practice that wouldn't make
+much sense for a Go game.
+
+### Broken socket connections during unexpected failures
+
+Weiqi has to deal with threading, interprocess communication, fairly complex
+graphics frameworks, and other things that go bump in the night. Because
+I haven't managed to fully implement robust error handling, it is possible
+for the application to crash abruptly. When that happens, the socket 
+connection is occasionally not closed properly. Although I don't know
+enough about socket programming to provide a clear explanation of this
+problem, I know that when sockets aren't closed properly, they will
+occasionally fail to respond until some operating-system level cleanup 
+happens.
+
+When this occurs, attempting to restart Weiqi after a crash may fail
+until that cleanup happens. You'll see an error like what is shown below:
+
+```Failed to listen on port 9002```
+
+I suspect this is simply a bug or very bad behavior in Weiqi, and that
+with proper error handling, I can ensure to do a safe cleanup. However,
+a lack of visibility into the underlying sources of crashes has been
+problematic, so I think we need to improve our debugging capabilities first.
+
+
+
+
 * Error handling (in game and in app)
 * Lack of good UI for scoring + passing
 * No automated tests
-* Installation process is painful
 
 ## Ideas for the future
 
