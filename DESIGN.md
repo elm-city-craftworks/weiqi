@@ -1,4 +1,4 @@
-## Design Notes
+## Noteworthy implementation details
 
 Although it is a simple program, building Weiqi required me to work
 through some interesting design decisions. I've done my best to summarize 
