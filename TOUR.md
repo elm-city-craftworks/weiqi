@@ -214,21 +214,15 @@ until that cleanup happens. You'll see an error like this:
 ```Failed to listen on port 9002```
 
 I suspect this is simply a bug or very bad behavior in Weiqi, and that
-with proper error handling, I can ensure to do a safe cleanup. However,
+with proper error handling, I can make sure to do a safe cleanup. However,
 a lack of visibility into the underlying sources of crashes has been
 problematic, so I think we need to improve our debugging capabilities first.
 
+### Lack of proper error handling and debugging capabilities
 
+### Lack of automated tests / comprehensive documentation
 
-
-* Error handling (in game and in app)
-* Lack of good UI for scoring + passing
-* No automated tests
-
-## Ideas for the future
-
-* Gemify?
-* TBD
+## Final notes
 
 
 [gtp]: http://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html
