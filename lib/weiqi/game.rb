@@ -29,15 +29,19 @@ module Weiqi
     end
 
     private
-
+    
     def move
+      # FIXME: The synchronization method used below is probably
+      # a bad practice, and while it seems to work, I am not
+      # confident that it will not lead to subtle failures.
       return unless @listening
 
-      notify_observers(yield)
       @listening = false
 
-      # FIXME: poor synchronization
+
       Thread.new do 
+        notify_observers(yield)
+
         notify_observers(@engine.play_white) 
         @listening = true
       end
@@ -52,6 +56,8 @@ module Weiqi
       elsif @history.last == "resign"
         puts "You win! The computer resigned"
         quit
+      elsif @history.last == "PASS"
+        puts "PASS!"
       end
 
       @observers.each { |o| o.(board) }
