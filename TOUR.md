@@ -1,5 +1,10 @@
 ## Noteworthy implementation details
 
+While Weiqi is nothing more than a minimal GUI wrapper around a command line
+program, building it did involve a few interesting design decisions. I've
+done my best to summarize them below, in the hopes that they will help
+you understand why things have been implemented the way they are.
+
 ### Weiqi relies on the Go Text Protocol (GTP)
 
 Internally, Weiqi uses a TCP socket to interact
