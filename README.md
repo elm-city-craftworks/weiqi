@@ -108,3 +108,7 @@ This project is licensed under the
 
 Contributors retain full copyright to their contributions, but must agree to
 license their work under the same license of the project itself.
+
+## Questions?
+
+Feel free to open a ticket or email **gregory@practicingruby.com**
