@@ -78,8 +78,8 @@ end
 ```
 
 This function is called by the application runner for
-each graphics adapter to allow its display to be updated
-whenever the game state changes.
+each graphics adapter to update the display whenever 
+game state changes.
 
 The basic idea is that each time a player clicks an empty 
 intersection on the board, the callback gets triggered twice:
