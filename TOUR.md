@@ -19,7 +19,7 @@ Ray game library. Ray is slightly easier to work with in this context
 than AWT/Swing because it implements a DSL specifically designed for
 building 2D games with, but it has several dependencies that need
 to be manually installed on all platforms except for Windows. See 
-_lib/weiqi/ui/ray.rb_ for more details.
+**lib/weiqi/ui/ray.rb** for more details.
 
 * Observer-based interaction between models and UI
 * Socket programming in GNU Go module
