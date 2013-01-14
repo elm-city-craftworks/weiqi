@@ -1,6 +1,6 @@
 ## Points of interest
 
-### Weiqi uses the Go Text Protocol (gtp)
+### Weiqi relies on the Go Text Protocol (GTP)
 
 While the current implementation of Weiqi assumes that you are 
 using [GNU Go][gnugo], multi-engine support might be straightfoward
