@@ -3,7 +3,7 @@
 ### Weiqi uses the Go Text Protocol (gtp)
 
 While the current implementation of Weiqi assumes that you are 
-using GNU Go, multi-engine support might be straightfoward
+using [GNU Go][gnugo], multi-engine support might be straightfoward
 to implement. Internally, Weiqi uses a TCP socket to interact
 with a listening GNU Go process via [GTP commands][gtp]. This
 loosely coupled structure might also make it feasible
@@ -16,6 +16,25 @@ complications on JRuby that weren't easily solveable. Using
 sockets comes with its own set of issues, which we'll discuss
 in more detail later on in this document.
 
+Weiqi's internal representation of the game board does not
+implement any domain logic, instead, it relies on the engine
+to handle all of those details. The state of the board is
+stored in an SGF file (which is a standard game format for
+computer Go), which is then parsed for stone coordinates
+to display in the UI. This is another design decision that
+hopefully makes the code a bit more flexible and extendible,
+and definitely reduces the complexity of its implementation.
+Weiqi uses the SGFParser gem for convenience, but so few
+of its features are used that it could conceivably be replaced
+with a few lines of regular expressions. That said, it's rarely
+a good idea to roll your own makeshift parser when there is
+already something readily available that gets the job done,
+and SGFParser seems to be working fine.
+
+For specific implementation details of the client code that
+interacts with GNU Go, see **lib/weiqi/gnu_go.rb**. You may
+also want to check out the trivial data object that implements the
+game board in **lib/weiqi/board.rb**.
 
 ### Weiqi supports multiple graphics backends
 
@@ -58,3 +77,5 @@ to be manually installed on all platforms except for Windows. See
 
 
 [gtp]: http://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html
+[gnugo]: http://www.gnu.org/software/gnugo/
+[sgf]: 
