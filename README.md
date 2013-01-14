@@ -85,7 +85,7 @@ $ bundle
 Peek at the Gemfile if you rather install your dependencies manually, but be
 sure to stroke your beard (or your friend's beard) while you do so!
 
-### Running Weiqi
+## Running Weiqi
 
 Simply run the following command from the project root:
 
@@ -100,3 +100,11 @@ Upon completing a full game, the score will be posted to terminal.
 If things don't work as expected, please check the installation instructions
 again to make sure you didn't miss anything. If that doesn't work, go ahead
 and file a ticket!
+
+## License / Contribution Policy
+
+This project is licensed under the 
+[GNU General Public License, Version 3](http://www.gnu.org/licenses/gpl.html).
+
+Contributors retain full copyright to their contributions, but must agree to
+license their work under the same license of the project itself.
