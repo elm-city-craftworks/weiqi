@@ -57,4 +57,4 @@ to be manually installed on all platforms except for Windows. See
 * TBD
 
 
-[gtp]: http://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html#SECTION00070000000000000000
+[gtp]: http://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html
