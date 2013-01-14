@@ -51,7 +51,7 @@ building 2D games with, but it has several dependencies that need
 to be manually installed on all platforms except for Windows. See 
 **lib/weiqi/ui/ray.rb** for more details.
 
-### Event-based view updates
+### Weiqi uses an event-based mechanism for updating views
 
 As we discussed earlier, Weiqi relies on the GNU Go engine to control the state 
 of the game board. Each time a command is executed on the engine, the board
