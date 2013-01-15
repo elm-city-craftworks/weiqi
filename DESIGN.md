@@ -159,43 +159,6 @@ barriers to either of these issues, but it may mean that the protocol for
 interacting with the UI will need to be expanded a bit to accomodate some
 additional information.
 
-### Weiqi takes a very naive approach to synchronization
-
-When the player clicks on the board, `Game#move` gets called under
-the hood. This method kicks off a Thread to process
-the human and AI player's move in the background, notifying observers
-twice during the process.
-
-Synchronization is achieved using an awkward flag-based mechanism that
-is almost certainly a sign of my lack of experience with proper threading
-practices:
-
-```ruby
-module Weiqi
-  class Game
-    def move
-      return unless @listening
-      @listening = false
-
-      Thread.new do 
-        notify_observers(yield)
-
-        notify_observers(@engine.play_white) 
-        @listening = true
-      end
-    end
-  end
-end
-```
-
-Although this code seems to work, it may have subtle errors that I haven't been
-able to detect yet, and so I have very little confidence in it. It also has a
-fairly abrupt behavior: any move attempts that are made while other moves
-are currently being processed are simply dropped. A better solution would
-be to at least trigger an event that notifies the UI of failed requests in
-some way. We could also queue up moves, but in practice that wouldn't make
-much sense for a Go game.
-
 ### Weiqi does not always cleanly close its socket connections
 
 Weiqi has to deal with threading, interprocess communication, fairly complex

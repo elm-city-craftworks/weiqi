@@ -1,11 +1,12 @@
+require "thread"
+
 module Weiqi
   class Game
     def initialize(engine)
       @engine    = engine
       @observers = []
       @history   = []
-      @finished  = false
-      @listening = true
+      @mutex     = Mutex.new
     end
 
     def finished?
@@ -34,16 +35,14 @@ module Weiqi
       # FIXME: The synchronization method used below is probably
       # a bad practice, and while it seems to work, I am not
       # confident that it will not lead to subtle failures.
-      return unless @listening
-
-      @listening = false
-
+      return if @mutex.locked?
 
       Thread.new do 
-        notify_observers(yield)
+        @mutex.synchronize do
+          notify_observers(yield)
 
-        notify_observers(@engine.play_white) 
-        @listening = true
+          notify_observers(@engine.play_white) 
+        end
       end
     end
 
