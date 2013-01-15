@@ -32,9 +32,6 @@ module Weiqi
     private
     
     def move
-      # FIXME: The synchronization method used below is probably
-      # a bad practice, and while it seems to work, I am not
-      # confident that it will not lead to subtle failures.
       return if @mutex.locked?
 
       Thread.new do 
