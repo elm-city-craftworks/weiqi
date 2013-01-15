@@ -72,8 +72,6 @@ module Weiqi
   module UI
     ListenForChanges = ->(display, game) {
       game.observe do |board|
-        game.quit if game.finished?
-
         display.view = BoardView.new(board)
         display.repaint
       end
