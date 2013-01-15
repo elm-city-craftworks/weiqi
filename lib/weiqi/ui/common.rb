@@ -37,6 +37,8 @@ module Weiqi
         paint_black_stones(canvas)
       end
 
+      private
+
       attr_accessor :board
 
       def paint_background(canvas)

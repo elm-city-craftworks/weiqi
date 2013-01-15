@@ -75,7 +75,7 @@ module Weiqi
       end
 
       def render(win)
-        win.draw @board_sprite
+        win.draw(board_sprite)
       end
 
       def repaint
@@ -87,8 +87,12 @@ module Weiqi
           target.update
         end
 
-        @board_sprite = sprite(image)
+        self.board_sprite = sprite(image)
       end
+
+      private
+
+      attr_accessor :board_sprite
     end
 
     class GameRunner < Ray::Game
