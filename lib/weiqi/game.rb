@@ -7,8 +7,6 @@ module Weiqi
       self.scheduler = scheduler
     end
 
-    attr_accessor :display
-
     def observe(&block)
       observers << block
     end
