@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     SgfParser (2.0.0)
+    ray (0.2.1)
 
 PLATFORMS
   java
@@ -9,3 +10,4 @@ PLATFORMS
 
 DEPENDENCIES
   SgfParser
+  ray

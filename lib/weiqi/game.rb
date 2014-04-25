@@ -1,12 +1,10 @@
-require "thread"
-
 module Weiqi
   class Game
-    def initialize(engine)
+    def initialize(engine, scheduler=Weiqi::AsyncScheduler.new)
       self.engine    = engine
       self.observers = []
       self.history   = []
-      self.mutex     = Mutex.new
+      self.scheduler = scheduler
     end
 
     def observe(&block)
@@ -27,17 +25,13 @@ module Weiqi
 
     private
 
-    attr_accessor :engine, :observers, :history, :mutex
+    attr_accessor :engine, :observers, :history, :scheduler
     
     def move
-      return if mutex.locked?
+      scheduler.run do
+        notify_observers(yield)
 
-      Thread.new do 
-        mutex.synchronize do
-          notify_observers(yield)
-
-          notify_observers(engine.play_white) 
-        end
+        notify_observers(engine.play_white) 
       end
     end
 
